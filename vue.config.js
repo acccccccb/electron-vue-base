@@ -11,5 +11,10 @@ module.exports = {
     outputDir:'dist',
     indexPath:'index.html',
     integrity:false,
-    lintOnSave:false
+    lintOnSave:false,
+    css:{
+        extract:true,
+        sourceMap:true,
+        requireModuleExtension:true,
+    }
 };

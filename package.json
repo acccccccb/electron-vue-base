@@ -6,8 +6,9 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "start": "electron .",
-    "pack": "electron-packager . electron1 --platform=win32 --arch=x64  --out=./pack --asar --app-version=0.0.1 --overwrite",
+    "pack": "node pack.config.js --unhandled-rejections=strict",
     "build": "vue-cli-service build",
+    "rebuild": "electron-rebuild",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
@@ -21,13 +22,19 @@
     "@vue/cli-service": "~4.4.0",
     "address": "^1.1.2",
     "babel-eslint": "^10.1.0",
+    "css-loader": "^4.0.0",
     "electron": "^9.1.1",
+    "electron-packager": "^15.0.0",
+    "electron-rebuild": "^1.11.0",
     "element-ui": "^2.13.2",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
     "font-awesome": "^4.7.0",
     "iconv-lite": "^0.6.2",
+    "node-sass": "^4.14.1",
     "os": "^0.1.1",
+    "sass-loader": "^9.0.2",
+    "style-loader": "^1.2.1",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {
