@@ -23,7 +23,7 @@
                 <el-button type="primary" :disabled="!command" @click="execShell" size="mini">执行</el-button>
             </el-form-item>
         </el-form>
-        <div class="resultBox">
+        <div class="resultBox fixScrollY">
             <pre v-if="result">{{result}}</pre>
             <div class="emptyResult" v-else>
                 返回结果

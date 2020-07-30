@@ -40,4 +40,7 @@ export default {
     background:#fff;
     user-select:none;
   }
+  .fixScrollY {
+    margin-right:-17px;
+  }
 </style>

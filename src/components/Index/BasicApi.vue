@@ -2,6 +2,7 @@
     <div>
         <el-button type="primary" @click="openUrl" size="mini">打开electron文档</el-button>
         <el-button type="primary" @click="showMessage" size="mini">桌面通知</el-button>
+        <el-button type="primary" @click="getUrl" size="mini">网络请求</el-button>
     </div>
 </template>
 <script>
@@ -11,6 +12,16 @@
             return {}
         },
         methods:{
+            getUrl:function(){
+                console.log('connect to https://www.baidu.com/');
+                fetch('https://www.baidu.com/',{
+                    method: 'get',
+                    headers: {
+                        UserAgent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36"
+                    },
+                }).then(res => res.text())
+                  .then(body => console.log(body));
+            },
             openUrl:function(){
                 electron.shell.openExternal('https://www.electronjs.org/docs')
             },

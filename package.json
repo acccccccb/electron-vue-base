@@ -4,15 +4,24 @@
   "private": true,
   "main": "main.js",
   "scripts": {
+    "dev": "vue-cli-service serve",
     "serve": "vue-cli-service serve",
     "start": "electron .",
+    "devServ": "node serve/serve.js",
     "pack": "node pack.config.js --unhandled-rejections=strict",
     "build": "vue-cli-service build",
     "rebuild": "electron-rebuild",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "font-awesome": "^4.7.0",
+    "element-ui": "^2.13.2",
+    "iconv-lite": "^0.6.2",
+    "os": "^0.1.1",
+    "address": "^1.1.2",
     "core-js": "^3.6.5",
+    "axios": "^0.19.2",
+    "node-fetch": "^2.6.0",
     "vue": "^2.6.11"
   },
   "devDependencies": {
@@ -21,6 +30,7 @@
     "@vue/cli-plugin-eslint": "~4.4.0",
     "@vue/cli-service": "~4.4.0",
     "address": "^1.1.2",
+    "axios": "^0.19.2",
     "babel-eslint": "^10.1.0",
     "css-loader": "^4.0.0",
     "electron": "^9.1.1",
@@ -30,7 +40,9 @@
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
     "font-awesome": "^4.7.0",
+    "http": "0.0.1-security",
     "iconv-lite": "^0.6.2",
+    "node-fetch": "^2.6.0",
     "node-sass": "^4.14.1",
     "os": "^0.1.1",
     "sass-loader": "^9.0.2",

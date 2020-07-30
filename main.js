@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, screen ,dialog,session,ipcMain,shell,webFrame,Notification,Tray,Menu} = require('electron');
+const { app, BrowserWindow, screen ,dialog,session,ipcMain,shell,webFrame,Notification,Tray,Menu,net} = require('electron');
 const path = require('path');
 let mainWindow;
 let tray = null;
@@ -79,7 +79,10 @@ let createWindow = function() {
       transparent:true,
       // backgroundColor:'#ffffff',
       webPreferences: {
-        preload: path.join(__dirname, 'preload.js')
+          devTools:true,
+          webSecurity:false,
+          allowRunningInsecureContent:true,
+          preload: path.join(__dirname, 'preload.js')
       }
   });
     mainWindow.once('ready-to-show', () => {
@@ -87,10 +90,10 @@ let createWindow = function() {
         creatTray();
     });
     // and load the index.html of the app.
-    // mainWindow.loadURL('http://localhost:8080',{
-    //     userAgent:'electron'
-    // });
-    mainWindow.loadFile('./dist/index.html');
+    mainWindow.loadURL('http://localhost:8080',{
+        userAgent:'electron'
+    });
+    // mainWindow.loadFile('./dist/index.html');
     // mainWindow.webContents.on('did-finish-load', function(){
     //     console.log('did-finish-load');
     // });

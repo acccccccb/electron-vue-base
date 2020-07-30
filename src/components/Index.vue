@@ -11,6 +11,9 @@
     <el-row :gutter="20" class="main">
       <el-col :span="24">
         <el-tabs v-model="activeName">
+          <el-tab-pane label="爬虫">
+            <Spider></Spider>
+          </el-tab-pane>
           <el-tab-pane label="基础API">
             <BasicApi></BasicApi>
           </el-tab-pane>
@@ -31,10 +34,11 @@
   import SystemInfo from '../components/Index/SystemInfo'
   import NetWork from '../components/Index/NetWork'
   import BasicApi from '../components/Index/BasicApi'
+  import Spider from '../components/Index/Spider'
     export default {
       name: 'Index',
         components:{
-            SystemInfo,NetWork,BasicApi,
+            SystemInfo,NetWork,BasicApi,Spider,
         },
         data(){
           return {
