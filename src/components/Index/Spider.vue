@@ -18,26 +18,30 @@
                 <el-input clearable readonly v-model="result" :autosize="{ minRows: 18, maxRows: 18 }" type="textarea"></el-input>
             </el-form-item>
             <el-form-item label="图片：" v-loading="loading" :element-loading-text="loadingText">
-                <img :src="img" alt="图片">
-                <el-image style="width: 100px; height: 100px" v-for="item in imgList" :preview-src-list="imgList" :src="item" fit="cover"></el-image>
+                <el-input v-model="imgSrc"></el-input>
+                <img v-if="img" :src="img" alt="图片">
+                <div v-if="true">
+                    <el-image style="width: 100px; height: 100px" v-for="item in imgList" :preview-src-list="imgList" :src="item" fit="cover"></el-image>
+                </div>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" @click="getUrl" size="mini" v-if="!loading">请求</el-button>
+                <el-button type="primary" @click="getImg(imgSrc)" size="mini" v-if="!loading">请求</el-button>
                 <el-button type="danger" @click="cancel" size="mini" v-if="loading">取消</el-button>
             </el-form-item>
         </el-form>
     </div>
 </template>
 <script>
+    import http from 'http'
     export default {
         name:'Spider',
         data(){
             return {
                 loading:false,
                 loadingText:'发起请求',
+                imgSrc:'https://www.socwall.com/images/wallpapers/88625-2560x1600.jpg',
                 form:{
-                    url:'http://img.netbian.com/file/2019/1216/9cc8ee311939ec9bfcf9a30a7eb380bc.jpg',
-                    // url:'http://www.netbian.com/fengjing/index_2.htm',
+                    url:'http://www.netbian.com/fengjing/index_2.htm',
                     method:'GET',
                     port:null
                 },
@@ -49,6 +53,55 @@
         methods:{
             cancel:function(){
                 this.loading=false;
+            },
+            getImg:function(src){
+                let _this = this;
+                console.log('请求图片',src);
+                let header= {
+                    "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+                    "Accept-Encoding":"gzip, deflate, br",
+                    "Accept-Language":"zh-CN,zh;q=0.9",
+                    "Cache-Control":"no-cache",
+                    "Connection":"keep-alive",
+                    "referer":"http://www.netbian.com",
+                    "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36"
+                };
+                let chunks = [];
+                let size = 0;
+                const request = new electron.remote.net.request({
+                    url:src,
+                    method:'GET',
+                    header:header,
+                    agent: false
+                });
+                // request.setHeader('referer',url);
+                request.on('response', (response) => {
+                    if(response.statusCode!==200) {
+                        _this.$message.warning('请求错误');
+                    }
+                    response.on('data', (chunk) => {
+                        size += chunk.length;
+                        chunks.push(chunk);
+                    });
+                    response.on('end', () => {
+                        console.warn('end');
+                        let base64Img = 'data:image/jpg;base64,';
+                        chunks.forEach((item)=>{
+                            console.log('isBuffer:',Buffer.isBuffer(item));
+                            base64Img += item.toString('base64');
+                        });
+                        console.log(chunks);
+                        console.log(typeof chunks[0]);
+                        // let buf = Buffer.concat(chunks,size);
+                        // let base64Img = 'data:image/jpg;base64,' +  iconv.decode(buf,'base64');
+                        // let base64Img = 'data:image/jpg;base64,' + iconv.decode(chunks,'base64');
+                        _this.img = base64Img;
+                    });
+                    response.on('error', (error) => {
+                        console.log(`ERROR: ${JSON.stringify(error)}`)
+                    })
+                });
+                request.end();
             },
             getUrl:function(){
                 let _this = this;
@@ -68,37 +121,37 @@
                     "referer":url,
                     "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36"
                 };
+                _this.loading = true;
                 const request = new electron.remote.net.request({
                     url:url,
                     method:_this.form.method,
                     port:_this.form.port,
                     header:header,
+                    agent: false
                 });
+                let chunks = [];
+                let size = 0;
                 // request.setHeader('referer',url);
-                _this.loading = true;
                 request.on('response', (response) => {
                     _this.loading = false;
-                    if(response.statusCode===200) {
-
-                    } else {
+                    if(response.statusCode!==200) {
                         _this.$message.warning('请求错误');
-                        return false;
                     }
                     response.on('data', (chunk) => {
-                        let base64Img = chunk.toString('base64');
-                        _this.img += base64Img;
-                        // let imgReg = /<img.*?(?:>|\/>)/gi;
-                        // let srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i;
-                        // let arr = chunk.toString().match(imgReg);
-                        // arr.forEach((item)=>{
-                        //     let src = item.match(srcReg);
-                        //     console.log(src[1]);
-                        //     _this.imgList.push(src[1]);
-                        // });
-                        // _this.result = chunk.toString();
+                        chunks.push(chunk);
+                        size += chunk.length;
                     });
-                    response.on('finish', () => {
-                        console.log('No more data in response.');
+                    response.on('end', () => {
+                        let imgReg = /<img.*?(?:>|\/>)/gi;
+                        let srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i;
+                        let arr = chunks.toString().match(imgReg);
+                        arr.forEach((item)=>{
+                            let src = item.match(srcReg);
+                            _this.imgList.push(src[1]);
+                        });
+                        _this.result = chunks.toString();
+                        _this.getImg(_this.imgList[0]);
+                        _this.$message.warning('图片列表获取完成');
                     });
                     response.on('error', (error) => {
                         console.log(`ERROR: ${JSON.stringify(error)}`)

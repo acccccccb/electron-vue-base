@@ -80,6 +80,7 @@ let createWindow = function() {
       // backgroundColor:'#ffffff',
       webPreferences: {
           devTools:true,
+          enableRemoteModule:true,
           webSecurity:false,
           allowRunningInsecureContent:true,
           preload: path.join(__dirname, 'preload.js')
