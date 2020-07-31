@@ -8,9 +8,14 @@ global.child_process = require('child_process');
 global.iconv = require('iconv-lite');
 global.os = require('os');
 global.http = require('http');
+global.fs = require('fs');
+global.fsExtra = require('fs-extra');
 global.nodeRequest = require('request');
+let buffer = require('buffer');
+global.myBuffer = buffer.Buffer;
 global.axios = require('axios');
 global.fetch = require('node-fetch');
+global.imgSize = require('image-size');
 window.addEventListener('DOMContentLoaded', () => {
     console.log('DOMContentLoaded');
 });
