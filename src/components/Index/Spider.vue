@@ -1,6 +1,6 @@
 <template>
     <div class="spiderBox fixScrollY">
-        <el-form :model="form" size="mini" label-position="left" label-width="120px">
+        <el-form :model="form" size="mini" label-position="right" label-width="120px">
             <el-form-item label="网址：">
                 <el-input :readonly="loading" placeholder="请输入网址" v-model="form.url" class="input-with-select">
                     <el-select style="width:80px;" v-model="form.method" slot="prepend" placeholder="请选择">
@@ -11,46 +11,80 @@
                     <el-button v-if="loading" style="background:#F56C6C;color:#fff;border-radius: 0 3px 3px 0;border:1px solid #F56C6C;" @click="cancel" slot="append">取消</el-button>
                 </el-input>
             </el-form-item>
-            <el-form-item label="端口：">
-                <el-input :readonly="loading" v-model.number="form.port" placeholder="80"></el-input>
-            </el-form-item>
-            <el-form-item label="超时时间：">
-                <el-input :readonly="loading" v-model.number="form.timeout" placeholder="80"></el-input>
-            </el-form-item>
+            <el-row :gutter="20">
+                <el-col :span="8">
+                    <el-form-item label="端口：">
+                        <el-input :readonly="loading" v-model.number="form.port" placeholder="80"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                    <el-form-item label="超时时间：">
+                        <el-input :readonly="loading" v-model.number="form.timeout" placeholder="如果图片下载不完整请将此数值调大"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                    <el-form-item label="页面编码：">
+                        <el-input :readonly="loading" v-model.number="form.encoding" placeholder="页面编码"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
             <el-form-item label="列表HTML：">
-                <el-input readonly v-model="listResult" type="textarea" placeholder="列表样例"></el-input>
+                <el-input readonly v-model="listResult" type="textarea" placeholder="获取列表HTML"></el-input>
             </el-form-item>
-            <el-form-item label="列表开始代码：">
-                <el-input :readonly="loading" v-model.number="form.urlStart" placeholder="列表开始代码"></el-input>
-            </el-form-item>
-            <el-form-item label="列表结束代码：">
-                <el-input :readonly="loading" v-model.number="form.urlEnd" placeholder="列表结束代码"></el-input>
-            </el-form-item>
+            <el-row :gutter="20">
+                <el-col :span="12">
+                    <el-form-item label="列表开始代码：">
+                        <el-input :readonly="loading" v-model.number="form.listStart" placeholder="列表区域开始代码"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="列表结束代码：">
+                        <el-input :readonly="loading" v-model.number="form.listEnd" placeholder="列表区域结束代码"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row :gutter="20">
+                <el-col :span="12">
+                    <el-form-item label="链接开始代码：">
+                        <el-input :readonly="loading" v-model.number="form.urlStart" placeholder="链接开始代码"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="链接结束代码：">
+                        <el-input :readonly="loading" v-model.number="form.urlEnd" placeholder="链接结束代码"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
             <el-form-item label="列表URL：">
                 <el-table height="250" size="mini" border :data="urlList">
                     <el-table-column type="index" label="#" align="center"></el-table-column>
-                    <el-table-column prop="url" label="列表URL"></el-table-column>
+                    <el-table-column prop="url" label="列表URL">
+                        <template slot-scope="scope">
+                            <el-button type="text" style="padding:0;" @click="openUrl(scope.row.url)">{{scope.row.url}}</el-button>
+                        </template>
+                    </el-table-column>
                 </el-table>
             </el-form-item>
-            <el-form-item label="图片HTML：">
-                <el-input readonly v-model="imgSrcResult" type="textarea" placeholder="图片样例"></el-input>
+            <el-form-item label="图片页HTML：">
+                <el-input readonly v-model="imgSrcResult" type="textarea" placeholder="图片页HTML"></el-input>
             </el-form-item>
-            <el-form-item label="图片服务器：">
+            <el-form-item label="图片链接前缀：">
                 <el-input :readonly="loading" v-model.number="form.imgServ" placeholder="图片地址前缀"></el-input>
             </el-form-item>
-            <el-form-item label="保存目录：">
-                <el-input readonly placeholder="请输入网址" v-model="form.path" class="input-with-select">
-                    <el-button style="background:#409EFF;color:#fff;border-radius: 0 3px 3px 0;border:1px solid #409EFF;" @click="choosePath" slot="append">选择</el-button>
-                </el-input>
-            </el-form-item>
-            <el-form-item label="图片开始代码：">
-                <el-input :readonly="loading" v-model.number="form.imgSrcStart" placeholder="列表开始代码"></el-input>
-            </el-form-item>
-            <el-form-item label="图片结束代码：">
-                <el-input :readonly="loading" v-model.number="form.imgSrcEnd" placeholder="列表结束代码"></el-input>
-            </el-form-item>
+            <el-row :gutter="20">
+                <el-col :span="12">
+                    <el-form-item label="图片开始代码：">
+                        <el-input :readonly="loading" v-model.number="form.imgSrcStart" placeholder="列表开始代码"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="图片结束代码：">
+                        <el-input :readonly="loading" v-model.number="form.imgSrcEnd" placeholder="列表结束代码"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
             <el-form-item>
-                <el-button type="primary" @click="getImgList(urlList)">获取图片列表</el-button>
+                <el-button type="primary" :disabled="urlList.length<=0" @click="getImgList(urlList)">获取图片地址</el-button>
             </el-form-item>
             <el-form-item label="待下载图片：">
                 <el-table height="250" size="mini" border :data="tempImgList">
@@ -66,13 +100,18 @@
                     </el-table-column>
                 </el-table>
             </el-form-item>
-            <el-form-item label="图片：">
+            <el-form-item label="保存目录：">
+                    <el-input readonly placeholder="请输入网址" v-model="form.path" class="input-with-select">
+                        <el-button style="background:#409EFF;color:#fff;border-radius: 0 3px 3px 0;border:1px solid #409EFF;" @click="choosePath" slot="append">选择</el-button>
+                    </el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="success" @click="downloadPictureByList(tempImgList)" size="mini" :disabled="tempImgList.length===0 || loading===true">下载图片</el-button>
+            </el-form-item>
+            <el-form-item label="已下载图片：">
                 <div v-if="true">
                     <el-image style="width: 100px; height: 100px;margin:0;" v-for="item in imgList" :preview-src-list="imgList" :src="item" fit="cover"></el-image>
                 </div>
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" @click="downloadPictureByList(tempImgList)" size="mini" :disabled="tempImgList.length===0 || loading===true">下载图片</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -83,19 +122,22 @@
         data(){
             return {
                 loading:false,
-                loadingText:'发起请求',
+                loadingText:'loading',
                 form:{
-                    url:'https://www.socwall.com/wallpapers/page:2/',
-                    // url:'http://www.netbian.com/fengjing/index_2.htm',
+                    // url:'https://www.socwall.com/wallpapers/page:2/',
+                    url:'http://www.netbian.com/fengjing/index_2.htm',
                     method:'GET',
                     port:null,
+                    encoding:'gb2312',
                     timeout:2,
                     path:'',
-                    imgServ:'https://www.socwall.com',
-                    urlStart:'<a class="image" href="',
-                    urlEnd:'target="_blank">',
-                    imgSrcStart:'src="',
-                    imgSrcEnd:' alt="Wallpaper"',
+                    imgServ:'http://www.netbian.com/',
+                    listStart:'<div class="list">',
+                    listEnd:'</ul>',
+                    urlStart:'<li><a href="',
+                    urlEnd:'" title="',
+                    imgSrcStart:'<img src="',
+                    imgSrcEnd:'" alt="',
                 },
                 result:'',
                 listResult:'',
@@ -111,6 +153,9 @@
             this.form.path = os.homedir() + '\\Downloads';
         },
         methods:{
+            openUrl:function(url){
+                electron.shell.openExternal(url)
+            },
             getList:function(){
                 let _this = this;
                 let port = this.form.port;
@@ -139,7 +184,7 @@
                     header:header,
                     agent: false
                 });
-                let result = '';
+                let result = [];
                 let chunks = [];
                 let size = 0;
                 request.setHeader('referer',url);
@@ -152,18 +197,23 @@
                         console.log('获取data');
                         chunks.push(chunk);
                         size += chunk.length;
-                        result += chunk.toString();
+                        result.push(chunk);
                         if(_this.timmer2) {
                             clearTimeout(_this.timmer2);
                         }
                         _this.timmer2 = setTimeout(function(){
+                            let listReg = new RegExp(_this.form.listStart + '([\\s\\S]*)' + _this.form.listEnd + '','gi');
+                            // let listReg = new RegExp('<div class="list">([\\s\\S]*)<a href="http://699pic.com/photo/" target="_blank">','gi');
+                            console.log('listReg:',listReg);
                             let imgReg = new RegExp(_this.form.urlStart + '.*?(?:>|\\'+ _this.form.urlEnd +')','gi');
-                            // let imgReg = /<a class="image" href=".*?(?:>|\ target="_blank">)/gi;
                             let srcReg = /href=[\'\"]?([^\'\"]*)[\'\"]?/i;
-                            _this.listResult = result;
-                            console.log(result);
-                            if(srcReg) {
-                                let arr = result.match(imgReg);
+                            let buf = myBuffer.concat(chunks,size);
+                            _this.listResult = iconv.decode(buf, _this.form.encoding);
+                            let listBody = _this.listResult.match(listReg);
+                            console.log('listResult',_this.listResult);
+                            console.log('listBody',listBody);
+                            let arr = listBody[0].match(imgReg);
+                            if(arr && arr.length>0) {
                                 arr.forEach((item)=>{
                                     let src = item.match(srcReg);
                                     if(src.length>0 && src[1]) {
@@ -174,6 +224,12 @@
                                             url:src[1],
                                         });
                                     }
+                                });
+                            } else {
+                                _this.$alert('请检查过滤规则是否正确', '列表获取失败', {
+                                    confirmButtonText: '确定',
+                                    type: 'warning',
+                                    callback: action => {}
                                 });
                             }
                             _this.loading = false;
@@ -311,7 +367,7 @@
                     header:header,
                     agent: false
                 });
-                let result = '';
+                let result = [];
                 let chunks = [];
                 let size = 0;
                 request.setHeader('referer',url);
@@ -324,7 +380,7 @@
                         console.log('获取data');
                         chunks.push(chunk);
                         size += chunk.length;
-                        result += chunk.toString();
+                        result.push(chunk);
                         if(_this.timmer2) {
                             clearTimeout(_this.timmer2);
                         }
@@ -333,9 +389,11 @@
                             // let srcReg = /src=\"?([^"]*)\"\salt=\"Wallpaper\"?/i; // imgSrcStart //imgSrcEnd
                             let srcReg = new RegExp(_this.form.imgSrcStart + '?([^"]*)\\"'+ _this.form.imgSrcEnd +'?','i');
                             console.log(srcReg);
-                            _this.imgSrcResult = result;
+                            let buf = myBuffer.concat(chunks,size);
+                            _this.imgSrcResult = iconv.decode(buf, _this.form.encoding);
                             if(srcReg) {
-                                let arr = result.match(imgReg);
+                                let arr = _this.imgSrcResult.match(imgReg);
+                                console.log(arr);
                                 arr.forEach((item)=>{
                                     let src = item.match(srcReg);
                                     console.log('src匹配',src);
@@ -375,8 +433,12 @@
                             let n = i+1;
                             loop(n);
                         } else {
-                            _this.$message.success('图片下载完成');
                             _this.loading = false;
+                            _this.$alert('图片下载完成', '下载完成', {
+                                confirmButtonText: '确定',
+                                type: 'success',
+                                callback: action => {}
+                            });
                         }
                     });
                 };
@@ -387,6 +449,7 @@
 </script>
 <style lang="scss" scoped>
     .spiderBox {
+        overflow-x:hidden;
         overflow-y:scroll;
         height:500px;
     }
