@@ -197,6 +197,7 @@
                 urlList:[],
                 timmer:null,
                 timmer2:null,
+                fullLoading:null,
                 percentage:0,
                 getImgListLoading:false,
                 getImgListLoadingText:'',
@@ -465,6 +466,14 @@
                     });
                     response.on('error', (error) => {
                         console.log(`ERROR: ${JSON.stringify(error)}`)
+                        if(_this.fullLoading) {
+                            _this.fullLoading.close();
+                        }
+                        _this.$alert('下载图片出错', '错误', {
+                            confirmButtonText: '确定',
+                            type: 'warning',
+                            callback: action => {}
+                        });
                     })
                 });
                 request.end();
@@ -642,30 +651,31 @@
                         confirmButtonText:'确定',
                         cancelButtonText:'取消',
                       }).then(()=>{
-                        let loading = this.$loading({
+                    _this.fullLoading = this.$loading({
                             lock: true,
                             text: '正在获取列表',
                             spinner: 'el-icon-loading',
                             background: 'rgba(0, 0, 0, 0.7)'
                         });
                         _this.getList(()=>{
-                            loading.close();
-                            loading = this.$loading({
+                            _this.fullLoading.close();
+                            _this.fullLoading = this.$loading({
                                 lock: true,
                                 text: '正在获取图片地址',
                                 spinner: 'el-icon-loading',
                                 background: 'rgba(0, 0, 0, 0.7)'
                             });
                             _this.getImgList(_this.urlList,()=>{
-                                loading.close();
-                                loading = this.$loading({
+                                _this.fullLoading.close();
+                                _this.fullLoading = this.$loading({
                                     lock: true,
                                     text: '正在下载图片',
                                     spinner: 'el-icon-loading',
                                     background: 'rgba(0, 0, 0, 0.7)'
                                 });
                                 _this.downloadPictureByList(_this.tempImgList,()=>{
-                                    loading.close();
+                                    _this.fullLoading.close();
+                                    _this.fullLoading = null;
                                 });
                             });
                         });
