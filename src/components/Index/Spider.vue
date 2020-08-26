@@ -70,6 +70,18 @@
                                 <el-input :readonly="loading" v-model.number="form.urlEnd" placeholder="链接结束代码"></el-input>
                             </el-form-item>
                         </el-col>
+                        <el-row :gutter="20">
+                            <el-col :span="12">
+                                <el-form-item label="通配符开始：">
+                                    <el-input-number :precision="0" :min="1" :step="1" :step-strictly="true" :max="65535" :controls="true" :readonly="loading" v-model.number="form.wildcardStart" placeholder="通配符开始"></el-input-number>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="通配符结束：">
+                                    <el-input-number :precision="0" :min="1" :step="1" :step-strictly="true" :max="65535" :controls="true" :readonly="loading" v-model.number="form.wildcardEnd" placeholder="通配符结束"></el-input-number>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
                     </el-row>
                     <el-form-item>
                         <el-button v-if="!loading" type="danger" @click="getList">获取列表</el-button>
@@ -178,6 +190,8 @@
                     url:'',
                     method:'GET',
                     port:80,
+                    wildcardStart:1,
+                    wildcardEnd:9,
                     encoding:'utf8',
                     timeout:1000,
                     path:'',
@@ -217,19 +231,8 @@
             openUrl:function(url){
                 electron.shell.openExternal(url)
             },
-            getList:function(callback){
+            getListByUrl:function(url,callback){
                 let _this = this;
-                let port = this.form.port;
-                this.result = '';
-                this.imgList = [];
-                this.tempImgList = [];
-                this.urlList = [];
-                this.getImgListLoading = false;
-                this.percentage=0;
-                let url = port!==80?(this.form.url+':'+port):this.form.url;
-                if(url.indexOf('https://')<0 && url.indexOf('http://')<0) {
-                    url = 'https://' + url;
-                }
                 let header= {
                     "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
                     "Accept-Encoding":"gzip, deflate, br",
@@ -322,6 +325,65 @@
                     })
                 });
                 request.end();
+            },
+            getList:function(callback){
+                let _this = this;
+                let port = this.form.port;
+                this.result = '';
+                this.imgList = [];
+                this.tempImgList = [];
+                this.getImgListLoading = false;
+                this.percentage=0;
+                let url = port!==80?(this.form.url+':'+port):this.form.url;
+                if(url.indexOf('https://')<0 && url.indexOf('http://')<0) {
+                    url = 'https://' + url;
+                }
+                if(url.indexOf('(*)')>-1) {
+                    console.log('检测到通配符');
+                    let wildcardStart = _this.form.wildcardStart;
+                    let wildcardEnd = _this.form.wildcardEnd;
+                    if(wildcardStart>wildcardEnd) {
+                        _this.$alert('通配符结束必须大于开始', '通配符错误', {
+                            confirmButtonText: '确定',
+                            type: 'warning',
+                            callback: action => {}
+                        });
+                        return false;
+                    } else {
+                        // 单个规则测试只请求第一个页面
+                        let list = [];
+                        let arr = url.split('(*)');
+                        for(let i=wildcardStart;i<=wildcardEnd;i++) {
+                            let urlItem = arr[0] + i + arr[1];
+                            list.push(urlItem);
+                        }
+                        console.log(list);
+                        let loop = function(i){
+                            console.log('循环开始', i);
+                            if(i==0) {
+                                _this.urlList = [];
+                            }
+                            _this.getListByUrl(list[i],function(){
+                                if(i>=list.length-1) {
+                                    if(callback && typeof callback == 'function') {
+                                        callback(false);
+                                    }
+                                } else {
+                                    i = i+1;
+                                    loop(i);
+                                }
+                            });
+                        };
+                        loop(0);
+                    }
+                } else {
+                    this.urlList = [];
+                    _this.getListByUrl(url,()=>{
+                        if(callback && typeof callback == 'function') {
+                            callback(false);
+                        }
+                    });
+                }
             },
             loadRuleFile:function(){
                 let loadRuleFilePath = localStorage.getItem('loadRuleFilePath')?localStorage.getItem('loadRuleFilePath'):os.homedir()+'\\Desktop';
