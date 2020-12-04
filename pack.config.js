@@ -5,7 +5,7 @@ const electronPackager = require('electron-packager');
 let date = new Date();
 let now = date.getFullYear().toString() + (date.getMonth()+1).toString() + date.getDate().toString() + date.getHours().toString() + date.getMinutes().toString() + date.getSeconds().toString();
 electronPackager({
-    name:config.name,
+    name:config.name + '-' + now,
     dir:'.',
     icon:'./favicon.ico',
     platform:'win32',
