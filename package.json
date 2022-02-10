@@ -53,7 +53,7 @@
     "iconv-lite": "^0.6.2",
     "image-size": "^0.8.3",
     "node-fetch": "^2.6.0",
-    "node-sass": "^4.14.1",
+    "node-sass": "^7.0.0",
     "os": "^0.1.1",
     "request": "^2.88.2",
     "sass-loader": "^9.0.2",
